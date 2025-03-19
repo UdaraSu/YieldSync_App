@@ -10,6 +10,10 @@ app.use(cors());
 // Check if MONGO_URI is loaded correctly
 console.log("MongoDB URI:", process.env.MONGO_URI); // Debugging
 
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working!' });
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
