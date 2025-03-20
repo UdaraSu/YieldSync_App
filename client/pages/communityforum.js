@@ -37,7 +37,7 @@ const initialPosts = [
   },
 ];
 
-// 📌 Forum Screen (Grid View)
+//  Forum Screen (Grid View)
 export default function ForumScreen({ navigation }) {
   const [posts, setPosts] = useState(initialPosts);
 
@@ -74,7 +74,7 @@ export default function ForumScreen({ navigation }) {
   );
 }
 
-// 📌 Styles
+//  Styles
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#f5f5f5" },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
