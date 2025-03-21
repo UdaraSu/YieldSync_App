@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -26,7 +26,7 @@ export default function SoilWeatherChecker() {
       </Text>
 
       {/* Logo */}
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <Image source={require('./assets/logo.png')} style={styles.logo} />
 
       {/* Dropdown */}
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdown}>
@@ -68,7 +68,7 @@ export default function SoilWeatherChecker() {
   );
 }
 
-useEffect(() => {
+/*useEffect(() => {
   const fetchAreas = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/areas');
@@ -81,7 +81,7 @@ useEffect(() => {
 
   fetchAreas();
 }, []);
-
+*/
 
 const styles = StyleSheet.create({
   container: {
