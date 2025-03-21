@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import ForumScreen from "./pages/communityforum"; // Importing the forum screen
+import NewPostScreen from "./pages/newpostscreen"; // Importing the new post screen
+import PostDetailScreen from "./pages/postdetailscreen"; // Importing the post detail screen
+import EditPostScreen from "./pages/EditPostScreen";
+import AlertListScreen from "./pages/AlertListScreen";
+import CreateNotice from "./pages/CreateNoticeScreen"; 
+import UpdateNoticeScreen from "./pages/UpdateNoticeScreen";
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <NavigationContainer>
       <StatusBar style="auto" />
-    </View>
+      <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: "#1b5e20" },
+        headerTintColor: "#ffffff",
+        headerTitleStyle: { fontWeight: "bold" },
+      }}
+      >
+        <Stack.Screen name="Forum" component={ForumScreen} />
+        <Stack.Screen name="NewPost" component={NewPostScreen} />
+        <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+        <Stack.Screen name="EditPost" component={EditPostScreen} />
+        <Stack.Screen name="Alert" component={AlertListScreen} />
+        <Stack.Screen name="AddNotice" component={CreateNotice} />
+        <Stack.Screen name="EditNotice" component={UpdateNoticeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

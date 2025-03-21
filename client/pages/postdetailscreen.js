@@ -5,7 +5,7 @@ export default function PostDetailScreen({ route }) {
   const { post } = route.params;
   return (
     <View style={styles.container}>
-      <Image source={post.image} style={styles.detailImage} />
+      <Image source={{ uri: post.image }} style={styles.detailImage} />
       <Text style={styles.postTitle}>{post.title}</Text>
       <Text>{post.content}</Text>
       <View style={styles.postStats}>
@@ -22,3 +22,4 @@ const styles = StyleSheet.create({
   postTitle: { fontWeight: "bold", fontSize: 20 },
   postStats: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
 });
+
