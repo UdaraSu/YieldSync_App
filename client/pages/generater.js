@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 15,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   headerText: {
     color: '#FFFFFF',
