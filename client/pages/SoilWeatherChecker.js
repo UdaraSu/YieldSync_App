@@ -68,6 +68,21 @@ export default function SoilWeatherChecker() {
   );
 }
 
+useEffect(() => {
+  const fetchAreas = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/areas');
+      const data = await response.json();
+      setAreas(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchAreas();
+}, []);
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
