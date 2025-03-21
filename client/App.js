@@ -8,6 +8,10 @@ import EditPostScreen from "./pages/EditPostScreen";
 import AlertListScreen from "./pages/AlertListScreen";
 import CreateNotice from "./pages/CreateNoticeScreen"; 
 import UpdateNoticeScreen from "./pages/UpdateNoticeScreen";
+import header from "./components/header"; 
+import footer from "./components/footer"; 
+import HomeScreen from "./pages/HomeScreen";
+import DetailsScreen from "./pages/DetailsScreen";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +33,10 @@ export default function App() {
         <Stack.Screen name="Alert" component={AlertListScreen} />
         <Stack.Screen name="AddNotice" component={CreateNotice} />
         <Stack.Screen name="EditNotice" component={UpdateNoticeScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="header" component={header} />
+        <Stack.Screen name="footer" component={footer} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
