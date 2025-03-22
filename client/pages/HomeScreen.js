@@ -40,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
       {/* Header */}
       <Header />
 
-      <Text style={{ color: "#4CAF50", fontSize: 16, marginBottom: 15 }}>Explore the world</Text>
+      <Text style={{ color: "#4CAF50", fontSize: 16, marginBottom: 15 }}>Stronger Farms Together</Text>
 
       {/* Search Bar */}
       <View
@@ -63,13 +63,13 @@ const HomeScreen = ({ navigation }) => {
       <Text style={{ fontSize: 18, fontWeight: "bold", color: "#1B5E20", marginTop: 20 }}>History</Text>
       <View style={{ flexDirection: "row", marginTop: 10 }}>
         <TouchableOpacity style={{ backgroundColor: "#388E3C", padding: 10, borderRadius: 15, marginRight: 10 }}>
-          <Text style={{ color: "white", fontWeight: "bold" }}>Most Viewed</Text>
+          <Text style={{ color: "white", fontWeight: "bold" }}>Announcement</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ padding: 10, borderRadius: 15, backgroundColor: "#A5D6A7", marginRight: 10 }}>
-          <Text style={{ color: "#1B5E20" }}>Nearby</Text>
+          <Text style={{ color: "#1B5E20" }}>Distributors</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ padding: 10, borderRadius: 15, backgroundColor: "#A5D6A7" }}>
-          <Text style={{ color: "#1B5E20" }}>Latest</Text>
+          <Text style={{ color: "#1B5E20" }}>Expenses</Text>
         </TouchableOpacity>
       </View>
 
