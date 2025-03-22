@@ -1,20 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import ExpenseScreen from './pages/AddExpenseScreen';
+import FinancialDashboard from './pages/FinancialDashboard';
+import BudgetPlanning from './pages/BudgetPlanning';
+import FinancialReports from './pages/FinancialReports';
+import AddExpenseScreen from './pages/AddExpenseScreen';  // AddExpenseScreen file
+import UpdateExpenseScreen from './pages/UpdateExpenseScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="FinancialDashboard">
+        <Stack.Screen name="FinancialDashboard" component={FinancialDashboard} />
+        <Stack.Screen name="AddExpenseScreen" component={AddExpenseScreen} />
+        <Stack.Screen name="UpdateExpenseScreen" component={UpdateExpenseScreen} />
+        <Stack.Screen name="BudgetPlanning" component={BudgetPlanning} />
+        <Stack.Screen name="FinancialReports" component={FinancialReports} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
