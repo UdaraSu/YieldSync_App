@@ -26,7 +26,7 @@ export default function SoilWeatherChecker() {
       </Text>
 
       {/* Logo */}
-      <Image source={require('./assets/logo.png')} style={styles.logo} />
+      {/* <Image source={require('./assets/logo.png')} style={styles.logo} /> */}
 
       {/* Dropdown */}
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdown}>

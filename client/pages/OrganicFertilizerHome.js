@@ -1,7 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import the hook
 
-export default function FertilizerHomePage({ navigation }) {
+export default function FertilizerHomePage() {
+  const navigation = useNavigation();
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Header */}
@@ -17,26 +20,36 @@ export default function FertilizerHomePage({ navigation }) {
         </Text>
 
         {/* Buttons */}
+        {/* <TouchableOpacity onPress={() => navigation.navigate('startup')}>
+          <Image
+            source={require('../assets/logo.png')} // Replace with your actual logo path
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </TouchableOpacity> */}
+
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('FertilizerCalculator')}
+          onPress={() => navigation.navigate('generater')}
         >
           <Text style={styles.buttonText}>Organic fertilizer calculator</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('WeatherChecker')}
+          onPress={() => navigation.navigate('SoilWeather')}
         >
           <Text style={styles.buttonText}>Soil & Weather condition checker</Text>
         </TouchableOpacity>
 
-        {/* Logo */}
-        <Image
-          source={require('./assets/logo.png')} // Replace with your logo path
-          style={styles.logo}
-          resizeMode="contain"
-        />
+
+        <TouchableOpacity onPress={() => navigation.navigate('startup')}>
+          <Image
+            source={require('../assets/logo.png')} // Replace with your actual logo path
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
 
         {/* Tagline */}
         <Text style={styles.tagline}>Grow together!</Text>
@@ -71,14 +84,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   content: {
-    width: '90%', // Adjust width to ensure proper fitting on different screens
+    width: '90%',
     alignItems: 'center',
   },
   description: {
     textAlign: 'center',
     fontSize: 14,
     color: '#333',
-    marginBottom: 100,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#3FA34D',
@@ -87,7 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
-    width: '100%', // Ensures buttons stretch to the width of the container
+    width: '100%',
   },
   buttonText: {
     color: '#FFFFFF',
@@ -95,9 +108,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   logo: {
-    width: 100, // Adjust logo size for better proportion
+    width: 100,
     height: 100,
-    marginVertical: 70,
+    marginVertical: 30,
   },
   tagline: {
     fontSize: 16,
@@ -109,6 +122,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     color: '#666',
-    paddingHorizontal: 10, // Prevents text from touching edges
+    paddingHorizontal: 10,
   },
 });

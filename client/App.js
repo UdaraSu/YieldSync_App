@@ -1,20 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from './pages/Startup';
+import OrganicFertilizerHome from './pages/OrganicFertilizerHome';
+import SoilWeatherChecker from './pages/SoilWeatherChecker';
+import FertilizerCalculator from './pages/generater';
+
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <NavigationContainer>
       <StatusBar style="auto" />
-    </View>
+      <Stack.Navigator initialRouteName="startup"
+      >
+        <Stack.Screen name="startup" component={Home} />
+        <Stack.Screen name="OrganicFertilizer" component={OrganicFertilizerHome}/>
+        <Stack.Screen name="SoilWeather" component={SoilWeatherChecker} />
+        <Stack.Screen name="generater" component={FertilizerCalculator} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

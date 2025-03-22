@@ -48,7 +48,7 @@ export default function FertilizerCalculator() {
 
       {/* Logo */}
       <Image
-        source={require('./assets/logo.png')} // Replace with your logo path
+        source={require('../assets/logo.png')} // Replace with your logo path
         style={styles.logo}
         resizeMode="contain"
       />

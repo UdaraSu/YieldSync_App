@@ -1,18 +1,27 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function HomePage() {
+export default function Home() {
+  const navigation = useNavigation(); // ✅ Correct way to get navigation object
+
   return (
     <ImageBackground
-      source={require('./assets/background.png')} // Replace with your background image path
+      source={require('../assets/background.png')}
       style={styles.background}
     >
       <View style={styles.container}>
         <Text style={styles.title}>YieldSync</Text>
-        <Image
-          source={require('./assets/logo.png')} // Replace with your actual logo path
-          style={styles.logo}
-        />
+
+        {/* ✅ TouchableOpacity to navigate */}
+        <TouchableOpacity onPress={() => navigation.navigate('OrganicFertilizer')}>
+          <Image
+            source={require('../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+
         <Text style={styles.subtitle}>Your Smart Farm Assistant</Text>
       </View>
     </ImageBackground>
@@ -22,7 +31,7 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    resizeMode: 'cover', // Makes the background image cover the whole screen
+    resizeMode: 'cover',
   },
   container: {
     flex: 1,
