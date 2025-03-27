@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert, LogBox } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 
 const API_URL = "http://192.168.179.92:5000/api/budget";
+
+// Suppress React Native logs warning
+LogBox.ignoreLogs([
+  "JavaScript logs will be removed from Metro in React Native 0.77!",
+]);
 
 export default function AddBudgetScreen() {
   const [budgetName, setBudgetName] = useState("");
@@ -16,20 +21,20 @@ export default function AddBudgetScreen() {
   const [budgets, setBudgets] = useState([]);
   const [editingBudget, setEditingBudget] = useState(null);
 
-  useEffect(() => {
-    fetchBudgets(); // Make sure this runs only once
-  }, []); // Empty dependency array to run only once
-
-  const fetchBudgets = async () => {
+  const fetchBudgets = useCallback(async () => {
     try {
-      console.log("Fetching budgets from:", API_URL); // Log URL for debugging
+      console.log("Fetching budgets from:", API_URL);
       const response = await axios.get(API_URL);
-      setBudgets(response.data); // Update state with the fetched data
+      setBudgets(response.data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
       Alert.alert("Error", "Failed to fetch budgets.");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchBudgets();
+  }, [fetchBudgets]);
 
   const validateFields = () => {
     if (!budgetName.trim()) {
@@ -57,8 +62,6 @@ export default function AddBudgetScreen() {
       date: date.toDateString(),
     };
 
-    console.log("Sending budget data:", newBudget); // Log data before sending
-
     try {
       if (editingBudget) {
         await axios.put(`${API_URL}/${editingBudget._id}`, newBudget);
@@ -67,7 +70,7 @@ export default function AddBudgetScreen() {
         await axios.post(API_URL, newBudget);
         Alert.alert("Success", "Budget saved successfully!");
       }
-      fetchBudgets(); // Re-fetch budgets after saving
+      fetchBudgets();
       resetForm();
     } catch (error) {
       console.error("Error saving budget:", error);
@@ -91,7 +94,7 @@ export default function AddBudgetScreen() {
         onPress: async () => {
           try {
             await axios.delete(`${API_URL}/${id}`);
-            fetchBudgets(); // Re-fetch budgets after deletion
+            fetchBudgets();
           } catch (error) {
             console.error("Error deleting budget:", error);
           }
@@ -109,25 +112,14 @@ export default function AddBudgetScreen() {
     setEditingBudget(null);
   };
 
+  // Calculate total budget
+  const totalBudget = budgets.reduce((sum, budget) => sum + parseFloat(budget.amount), 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{editingBudget ? "Edit Budget" : "Add New Budget"}</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Budget Name"
-        value={budgetName}
-        onChangeText={setBudgetName}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Amount"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-
+      <TextInput style={styles.input} placeholder="Budget Name" value={budgetName} onChangeText={setBudgetName} />
+      <TextInput style={styles.input} placeholder="Amount" keyboardType="numeric" value={amount} onChangeText={setAmount} />
       <View style={styles.pickerContainer}>
         <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)}>
           <Picker.Item label="Select Category" value="" />
@@ -137,12 +129,10 @@ export default function AddBudgetScreen() {
           <Picker.Item label="Rent" value="Rent" />
         </Picker>
       </View>
-
       <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
         <Ionicons name="calendar" size={20} color="green" />
         <Text style={styles.dateText}>Select Date: {date.toDateString()}</Text>
       </TouchableOpacity>
-
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -154,11 +144,9 @@ export default function AddBudgetScreen() {
           }}
         />
       )}
-
       <TouchableOpacity style={styles.saveButton} onPress={handleSaveBudget}>
         <Text style={styles.saveButtonText}>{editingBudget ? "Update Budget" : "Save Budget"}</Text>
       </TouchableOpacity>
-
       <FlatList
         data={budgets}
         keyExtractor={(item) => item._id}
@@ -176,6 +164,9 @@ export default function AddBudgetScreen() {
           </View>
         )}
       />
+      <View style={styles.totalBudgetContainer}>
+        <Text style={styles.totalBudgetText}>Total Budget: Rs. {totalBudget.toFixed(2)}</Text>
+      </View>
     </View>
   );
 }
@@ -194,4 +185,15 @@ const styles = StyleSheet.create({
   budgetDetails: { fontSize: 14, color: "#555" },
   editButton: { backgroundColor: "#f39c12", padding: 8, borderRadius: 5, marginRight: 5, color: "#fff", fontWeight: "bold" },
   deleteButton: { backgroundColor: "#e74c3c", padding: 8, borderRadius: 5, color: "#fff", fontWeight: "bold" },
+  totalBudgetContainer: {
+    marginTop: 15,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  totalBudgetText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+  },
 });
