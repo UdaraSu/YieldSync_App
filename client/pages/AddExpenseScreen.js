@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { 
-  View, Text, TextInput, TouchableOpacity, FlatList, Alert 
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from "react-native";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
 const API_URL = "http://192.168.179.92:5000/api/expenses"; // Replace with your actual backend URL
 
-const AddExpenseScreen = () => {
+const AddExpenseScreen = ({ navigation }) => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
@@ -28,7 +26,15 @@ const AddExpenseScreen = () => {
       .catch(error => console.error("Error fetching expenses:", error));
   }, []);
 
-  
+  // Set navigation options for the screen
+  useEffect(() => {
+    navigation.setOptions({
+      title: 'Add Expense', // Title of the screen
+      headerStyle: { backgroundColor: 'green' }, // Green header
+      headerTintColor: '#fff', // White text
+    });
+  }, [navigation]);
+
   // Calculate Total Expenses
   const calculateTotalExpenses = (expensesList) => {
     const total = expensesList.reduce((sum, item) => sum + parseFloat(item.amount), 0);
@@ -112,8 +118,8 @@ const AddExpenseScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add New Expense</Text>
-      
+      <Text style={styles.title}>{editingId ? "Edit Expense" : "Add New Expense"}</Text>
+
       <TextInput placeholder="Description" style={styles.input} value={description} onChangeText={setDescription} />
       <TextInput placeholder="Amount" keyboardType="numeric" style={styles.input} value={amount} onChangeText={setAmount} />
 
@@ -171,22 +177,22 @@ const AddExpenseScreen = () => {
 };
 
 const styles = {
-  container: { flex: 1, padding: 20, backgroundColor: "#f0f8e0" },
+  container: { flex: 1, padding: 20, backgroundColor: "#e8f5e9" },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10, textAlign: "center" },
   input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginVertical: 5, borderRadius: 5, backgroundColor: "#fff" },
-  pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginVertical: 5 },
-  picker: { height: 55, width: "100%" },
+  pickerContainer: {  borderWidth: 1,borderColor: '#ddd',borderRadius: 10,marginBottom: 5,overflow: 'hidden', backgroundColor: '#fff',marginTop:5},
+  picker: { height: 54, width: "100%" },
   dateButton: { backgroundColor: "#ddd", padding: 12, borderRadius: 5, alignItems: "center", marginVertical: 5 },
   dateButtonText: { fontSize: 16 },
-  button: { backgroundColor: "green", padding: 12, borderRadius: 5, alignItems: "center", marginTop: 10 },
-  buttonText: { color: "white", fontWeight: "bold" },
+  button: { backgroundColor: "#2e7d32", padding: 12, borderRadius: 5, alignItems: "center", marginTop: 10 ,marginBottom:10},
+  buttonText: { color: "#fff", fontSize:14, fontWeight: "bold" },
   expenseItem: { backgroundColor: "white", padding: 15, borderRadius: 8, marginVertical: 5 },
   expenseText: { fontSize: 16, fontWeight: "bold" },
   expenseCategoryText: { fontSize: 14, color: "#555" },
   expenseDateText: { fontSize: 14, color: "#777" },
-  expenseButtons: { flexDirection: "row", marginTop: 10 },
-  editButton: { backgroundColor: "orange", padding: 8, borderRadius: 5, marginRight: 5 },
-  deleteButton: { backgroundColor: "red", padding: 8, borderRadius: 5 },
+  expenseButtons: { flexDirection: "row", marginTop: 10, justifyContent: 'space-between' },
+  editButton: { backgroundColor: "#f5ad42", padding: 8, borderRadius: 5, marginRight: 5, color: "#000" },
+  deleteButton: { backgroundColor: "#d32f2f", padding: 8, borderRadius: 5 },
   totalExpenseText: { fontSize: 18, fontWeight: "bold", marginTop: 20, textAlign: "center" }
 };
 
