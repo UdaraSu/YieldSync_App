@@ -1,70 +1,51 @@
-const Budget = require('../models/Budget');
+const Budget = require("../models/Budget");
 
-// Create a new budget
-const createBudget = async (req, res) => {
-  const { category, budgetAmount } = req.body;
-
-  if (!category || !budgetAmount) {
-    return res.status(400).json({ message: 'Category and Budget Amount are required' });
-  }
-
+// ✅ Add a new budget
+const addBudget = async (req, res) => {
   try {
-    const newBudget = new Budget({ category, budgetAmount });
+    const { description, amount, category, date } = req.body;
+    const newBudget = new Budget({ description, amount, category, date });
     await newBudget.save();
-    res.status(201).json({ message: 'Budget created successfully', budget: newBudget });
+    res.status(201).json({ message: "Save Successfully", newBudget });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: "Server Error", details: error.message });
   }
 };
 
-// Get all budgets
-const getAllBudgets = async (req, res) => {
+// ✅ Get all budgets
+const getBudgets = async (req, res) => {
   try {
     const budgets = await Budget.find();
     res.status(200).json(budgets);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: "Server Error", details: error.message });
   }
 };
 
-// Update a budget
+// ✅ Update (edit) a budget entry
 const updateBudget = async (req, res) => {
-  const { category, budgetAmount } = req.body;
-
-  if (!category || !budgetAmount) {
-    return res.status(400).json({ message: 'Category and Budget Amount are required' });
-  }
-
   try {
-    const updatedBudget = await Budget.findByIdAndUpdate(
-      req.params.id,
-      { category, budgetAmount },
-      { new: true }
-    );
-
+    const updatedBudget = await Budget.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedBudget) {
-      return res.status(404).json({ message: 'Budget not found' });
+      return res.status(404).json({ error: "Budget not found" });
     }
-
-    res.status(200).json({ message: 'Budget updated successfully', budget: updatedBudget });
+    res.status(200).json({ message: "Edit Successfully", updatedBudget });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: "Server Error", details: error.message });
   }
 };
 
-// Delete a budget
+// ✅ Delete a budget entry
 const deleteBudget = async (req, res) => {
   try {
     const deletedBudget = await Budget.findByIdAndDelete(req.params.id);
-
     if (!deletedBudget) {
-      return res.status(404).json({ message: 'Budget not found' });
+      return res.status(404).json({ error: "Budget not found" });
     }
-
-    res.status(200).json({ message: 'Budget deleted successfully' });
+    res.status(200).json({ message: "Delete Successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ error: "Server Error", details: error.message });
   }
 };
 
-module.exports = { createBudget, getAllBudgets, updateBudget, deleteBudget };
+module.exports = { addBudget, getBudgets, updateBudget, deleteBudget };

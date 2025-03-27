@@ -44,7 +44,7 @@ export default function FinancialDashboard({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      <Text style={styles.subtitle}>Overview of Your Finances</Text>
+      <Text style={styles.subtitle}>Your Current Financial Snapshot</Text>
 
       <View style={styles.summaryContainer}>
         <Text style={styles.summary}>💰 Total Income: Rs.3,000</Text>
@@ -79,7 +79,7 @@ export default function FinancialDashboard({ navigation }) {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BudgetPlanning')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddBudgetScreen')}>
           <Text style={styles.buttonText}>Budget Planning</Text>
         </TouchableOpacity>
 

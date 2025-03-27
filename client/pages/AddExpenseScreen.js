@@ -1,340 +1,193 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState, useEffect } from "react";
+import { 
+  View, Text, TextInput, TouchableOpacity, FlatList, Alert 
+} from "react-native";
+import axios from "axios";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 
-export default function AddExpenseScreen({ navigation }) {
-    const [date, setDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [category, setCategory] = useState('Select Category');
-    const [amount, setAmount] = useState('');
-    const [description, setDescription] = useState('');
-    const [expenses, setExpenses] = useState([]); // Store recent expenses
-    const [isEditing, setIsEditing] = useState(false); // Track if we are editing an existing expense
-    const [editExpenseId, setEditExpenseId] = useState(null); // Track expense being edited
+const API_URL = "http://192.168.179.92:5000/api/expenses"; // Replace with your actual backend URL
 
-    // Fetch recent expenses from backend (you can replace with your API)
-    const fetchExpenses = async () => {
-        try {
-            const response = await fetch('http://192.168.179.92:5000/api/expenses'); // Update URL to your backend
-            const data = await response.json();
-            setExpenses(data);
-        } catch (error) {
-            console.error('Error fetching expenses:', error);
-        }
-    };
+const AddExpenseScreen = () => {
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [expenses, setExpenses] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
-    useEffect(() => {
-        navigation.setOptions({
-            title: 'Add Expense',
-            headerStyle: {
-                backgroundColor: '#2e7d32', // Green background
-            },
-            headerTintColor: '#fff', // White text and back arrow
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
-        });
-    }, [navigation]);
-    
+  // Fetch expenses when the screen loads
+  useEffect(() => {
+    axios.get(API_URL)
+      .then(response => {
+        setExpenses(response.data);
+        calculateTotalExpenses(response.data);
+      })
+      .catch(error => console.error("Error fetching expenses:", error));
+  }, []);
 
-    useEffect(() => {
-        fetchExpenses(); // Fetch the expenses when the component mounts
-    }, []);
+  
+  // Calculate Total Expenses
+  const calculateTotalExpenses = (expensesList) => {
+    const total = expensesList.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+    setTotalExpenses(total);
+  };
 
-    const onDateChange = (event, selectedDate) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-            setDate(selectedDate); // Update the selected date
-        }
-    };
+  // Handle Date Change
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+  };
 
-    // Validation function
-    const validateFields = () => {
-        if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-            Alert.alert('Invalid Input', 'Please enter a valid amount greater than 0.');
-            return false;
-        }
-        if (!category || category === 'Select Category') {
-            Alert.alert('Invalid Input', 'Please select a category.');
-            return false;
-        }
-        if (!description.trim()) {
-            Alert.alert('Invalid Input', 'Please enter a description.');
-            return false;
-        }
-        if (!date) {
-            Alert.alert('Invalid Input', 'Please select a date.');
-            return false;
-        }
-        return true;
-    };
+  // Validate Input
+  const validateInputs = () => {
+    if (!description.trim() || !amount.trim() || !category || category === "Select Category") {
+      Alert.alert("Error", "Please fill all fields properly.");
+      return false;
+    }
+    if (isNaN(amount) || parseFloat(amount) <= 0) {
+      Alert.alert("Error", "Please enter a valid amount.");
+      return false;
+    }
+    return true;
+  };
 
-    const onSave = async () => {
-        if (validateFields()) {
-            const expenseData = { date, category, amount, description };
-            const url = isEditing
-                ? `http://192.168.179.92:5000/api/expenses/update/${editExpenseId}`
-                : 'http://192.168.179.92:5000/api/expenses/create';
-    
-            try {
-                const response = await fetch(url, {
-                    method: isEditing ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(expenseData),
-                });
-    
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error saving expense:', errorText);
-                    Alert.alert('Error', `Saving failed: ${errorText}`);
-                    return;
-                }
-    
-                Alert.alert('Success', isEditing ? '🪄 Expense updated successfully!' : '✅ Expense saved successfully!');
-                fetchExpenses(); // Refresh the expenses list
-            } catch (error) {
-                console.error('Error saving expense:', error);
-                Alert.alert('Error', `Saving failed: ${error.message}`);
-            }
-        }
-    };
+  // Save or update expense
+  const handleSaveExpense = () => {
+    if (!validateInputs()) return;
 
-    // Delete Expense
-    const onDelete = async (id) => {
-        Alert.alert(
-          'Delete Expense',
-          'Are you sure you want to delete this expense?',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            {
-              text: 'Delete',
-              onPress: async () => {
-                try {
-                  const response = await fetch(`http://192.168.179.92:5000/api/expenses/delete/${id}`, {
-                    method: 'DELETE',
-                  });
+    const formattedDate = date.toISOString().split("T")[0]; // Remove time
+    const expenseData = { description, amount, category, date: formattedDate };
+
+    if (editingId) {
+      axios.put(`${API_URL}/update/${editingId}`, expenseData)
+        .then(response => {
+          Alert.alert("Updated Successfully", response.data.message);
+          const updatedExpenses = expenses.map(exp => exp._id === editingId ? response.data.expense : exp);
+          setExpenses(updatedExpenses);
+          calculateTotalExpenses(updatedExpenses);
+          setEditingId(null);
+        })
+        .catch(error => Alert.alert("Error", "Failed to update expense."));
+    } else {
+      axios.post(`${API_URL}/create`, expenseData)
+        .then(response => {
+          Alert.alert("✅ Saved Successfully", response.data.message);
+          const newExpenses = [...expenses, response.data.expense];
+          setExpenses(newExpenses);
+          calculateTotalExpenses(newExpenses);
+        })
+        .catch(error => Alert.alert("Error", "Failed to save expense."));
+    }
+
+    setDescription("");
+    setAmount("");
+    setCategory("");
+  };
+
+  // Delete expense with confirmation
+  const handleDeleteExpense = (id) => {
+    Alert.alert("Confirm Delete", "Are you sure you want to delete this expense?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        onPress: () => {
+          axios.delete(`${API_URL}/delete/${id}`)
+            .then(response => {
+              Alert.alert("Deleted Successfully", response.data.message);
+              const remainingExpenses = expenses.filter(exp => exp._id !== id);
+              setExpenses(remainingExpenses);
+              calculateTotalExpenses(remainingExpenses);
+            })
+            .catch(error => Alert.alert("Error", "Failed to delete expense."));
+        },
+        style: "destructive"
+      }
+    ]);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Add New Expense</Text>
       
-                  if (response.ok) {
-                    Alert.alert('Success', '🗑️ Expense deleted successfully!');
-                    fetchExpenses(); // Refresh the expenses list after deletion
-                  } else {
-                    const errorText = await response.text(); // Read error message from server
-                    Alert.alert('Error', `Failed to delete expense: ${errorText}`);
-                  }
-                } catch (error) {
-                  console.error('Error deleting expense:', error);
-                  Alert.alert('Error', 'An error occurred while deleting the expense.');
-                }
-              },
-            },
-          ]
-        );
-    };
+      <TextInput placeholder="Description" style={styles.input} value={description} onChangeText={setDescription} />
+      <TextInput placeholder="Amount" keyboardType="numeric" style={styles.input} value={amount} onChangeText={setAmount} />
 
-    const handleEdit = (expenseId) => {
-        navigation.navigate('UpdateExpenseScreen', { expenseId });  // Navigate to Edit Expense screen
-    };
+      {/* Category Picker */}
+      <View style={styles.pickerContainer}>
+        <Picker selectedValue={category} onValueChange={setCategory} style={styles.picker}>
+          <Picker.Item label="Select Category" value="Select Category" />
+          <Picker.Item label="🌱Food" value="Food" />
+          <Picker.Item label="🛠️Utilities" value="Utilities" />
+          <Picker.Item label="⚙️Entertainment" value="Entertainment" />
+        </Picker>
+      </View>
 
-    const renderExpenseItem = ({ item }) => (
-        <View style={styles.expenseItem}>
-            <Text style={styles.expenseText}>{`${item.description} - $${item.amount}`}</Text>
+      {/* Date Picker */}
+      <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
+        <Text style={styles.dateButtonText}>Select Date: {date.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker value={date} mode="date" display="spinner" onChange={onDateChange} />
+      )}
+
+      <TouchableOpacity style={styles.button} onPress={handleSaveExpense}>
+        <Text style={styles.buttonText}>{editingId ? "Update Expense" : "Save Expense"}</Text>
+      </TouchableOpacity>
+
+      <FlatList 
+        data={expenses}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={styles.expenseItem}>
+            <Text style={styles.expenseText}>{item.description} {`- Rs. ${parseFloat(item.amount).toFixed(2)}`}</Text>
             <Text style={styles.expenseCategoryText}>Category: {item.category}</Text>
             <Text style={styles.expenseDateText}>Date: {new Date(item.date).toLocaleDateString()}</Text>
             <View style={styles.expenseButtons}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
-                    <Text style={styles.buttonText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => onDelete(item._id)}>
-                    <Text style={styles.buttonText}>Delete</Text>
-                </TouchableOpacity>
+              <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEditingId(item._id);
+                setDescription(item.description);
+                setAmount(item.amount);
+                setCategory(item.category);
+              }}>
+                <Text style={styles.buttonText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteExpense(item._id)}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
             </View>
-        </View>
-    );
+          </View>
+        )}
+      />
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Add New Expense</Text>
+      {/* Total Expenses Display */}
+      <Text style={styles.totalExpenseText}>Total Expenses: Rs. {totalExpenses.toFixed(2)}</Text>
+    </View>
+  );
+};
 
-            {/* Expense Name */}
-            <TextInput
-                style={styles.input}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-            />
+const styles = {
+  container: { flex: 1, padding: 20, backgroundColor: "#f0f8e0" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10, textAlign: "center" },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginVertical: 5, borderRadius: 5, backgroundColor: "#fff" },
+  pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginVertical: 5 },
+  picker: { height: 55, width: "100%" },
+  dateButton: { backgroundColor: "#ddd", padding: 12, borderRadius: 5, alignItems: "center", marginVertical: 5 },
+  dateButtonText: { fontSize: 16 },
+  button: { backgroundColor: "green", padding: 12, borderRadius: 5, alignItems: "center", marginTop: 10 },
+  buttonText: { color: "white", fontWeight: "bold" },
+  expenseItem: { backgroundColor: "white", padding: 15, borderRadius: 8, marginVertical: 5 },
+  expenseText: { fontSize: 16, fontWeight: "bold" },
+  expenseCategoryText: { fontSize: 14, color: "#555" },
+  expenseDateText: { fontSize: 14, color: "#777" },
+  expenseButtons: { flexDirection: "row", marginTop: 10 },
+  editButton: { backgroundColor: "orange", padding: 8, borderRadius: 5, marginRight: 5 },
+  deleteButton: { backgroundColor: "red", padding: 8, borderRadius: 5 },
+  totalExpenseText: { fontSize: 18, fontWeight: "bold", marginTop: 20, textAlign: "center" }
+};
 
-            {/* Amount Input */}
-            <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                placeholder="Amount"
-                value={amount}
-                onChangeText={setAmount}
-            />
-
-            {/* Category Picker */}
-            <View style={styles.pickerContainer}>
-                <Picker selectedValue={category} onValueChange={setCategory} style={styles.picker}>
-                    <Picker.Item label="Select Category" value="Select Category" />
-                    <Picker.Item label="🌱Food" value="🌱Food" />
-                    <Picker.Item label="🛠️Utilities" value="🛠️Utilities" />
-                    <Picker.Item label="⚙️Entertainment" value="⚙️Entertainment" />
-                </Picker>
-            </View>
-
-            {/* Date Picker Button */}
-            <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
-                <Ionicons name="calendar" size={22} color="#2e7d32" />
-                <Text style={styles.dateText}>{date.toDateString()}</Text>
-            </TouchableOpacity>
-
-            {/* DateTimePicker */}
-            {showDatePicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="date"
-                    display="spinner"  // Use spinner to select date
-                    onChange={onDateChange}
-                    style={styles.dateTimePicker}
-                />
-            )}
-
-            {/* Save Button */}
-            <TouchableOpacity style={styles.saveButton} onPress={onSave}>
-                <Text style={styles.saveButtonText}>{isEditing ? 'Update Expense' : 'Save Expense'}</Text>
-            </TouchableOpacity>
-
-            {/* View Recent Expenses */}
-            <Text style={styles.viewExpensesText}>Recorded Expenses:</Text>
-            <FlatList
-                data={expenses}
-                renderItem={renderExpenseItem}
-                keyExtractor={(item) => item._id.toString()}
-            />
-        </View>
-    );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 25,
-        backgroundColor: '#e8f5e9',
-        justifyContent: 'flex-start',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#333',
-        marginBottom: 25,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 14,
-        borderRadius: 10,
-        marginBottom: 15,
-        fontSize: 16,
-        color: '#333',
-        backgroundColor: '#fff',
-    },
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 10,
-        marginBottom: 15,
-        overflow: 'hidden',
-        backgroundColor: '#fff',
-    },
-    picker: {
-        height: 54,
-        color: '#333',
-    },
-    datePicker: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 15,
-        borderColor: '#ddd',
-    },
-    dateText: {
-        marginLeft: 12,
-        fontSize: 15,
-        color: '#333',
-        fontWeight: '600',
-    },
-    dateTimePicker: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-    },
-    saveButton: {
-        backgroundColor: '#2e7d32',
-        paddingVertical: 14,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 4, height: 10 },
-    },
-    saveButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    expenseItem: {
-        backgroundColor: '#fff',
-        padding: 15,
-        marginBottom: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 5, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 5,
-    },
-    expenseText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    expenseCategoryText: {
-        fontSize: 14,
-        color: '#666',
-    },
-    expenseDateText: {
-        fontSize: 12,
-        color: '#aaa',
-        marginBottom: 10,
-    },
-    expenseButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    editButton: {
-        backgroundColor: '#f5ad42',
-        paddingVertical: 8,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-    },
-    deleteButton: {
-        backgroundColor: '#d32f2f',
-        paddingVertical: 8,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-    viewExpensesText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 15,
-    },
-});
+export default AddExpenseScreen;

@@ -5,18 +5,11 @@ const {
   createExpense,
   updateExpense,
   deleteExpense,
-} = require('../controllers/expenseController');
+} = require('../controllers/expenseController'); // ✅ Make sure this path is correct
 
-// Get all expenses
 router.get('/', getExpenses);
-
-// Create a new expense
-router.post('/create', createExpense);
-
-// Update an expense by ID
+router.post('/create', createExpense); // ❌ This is causing the error if `createExpense` is undefined
 router.put('/update/:id', updateExpense);
-
-// Delete an expense by ID
 router.delete('/delete/:id', deleteExpense);
 
 module.exports = router;
