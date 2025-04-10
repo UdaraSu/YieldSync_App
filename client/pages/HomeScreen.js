@@ -30,10 +30,6 @@ const HomeScreen = ({ navigation }) => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
-  const handleImageClick = (id) => {
-    // Navigate to the Details screen, passing the image id
-    navigation.navigate("Details", { imageId: id });
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f5e9", padding: 20 }}>
@@ -53,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
         }}
       >
         <Icon name="search" size={20} color="#2E7D32" style={{ marginRight: 5 }} />
-        <TextInput placeholder="Search places" placeholderTextColor="#388E3C" style={{ flex: 1, fontSize: 16, color: "#2E7D32" }} />
+        <TextInput placeholder="Search " placeholderTextColor="#388E3C" style={{ flex: 1, fontSize: 16, color: "#2E7D32" }} />
         <TouchableOpacity>
           <Icon name="sliders" size={20} color="#2E7D32" />
         </TouchableOpacity>

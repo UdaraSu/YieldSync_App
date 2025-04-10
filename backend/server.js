@@ -2,6 +2,7 @@ require('dotenv').config(); // Load .env variables
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const authRoutes = require("./routes/authRouts");
 
 const app = express();
 app.use(express.json());
@@ -9,6 +10,8 @@ app.use(cors());
 
 // Check if MONGO_URI is loaded correctly
 console.log("MongoDB URI:", process.env.MONGO_URI); // Debugging
+
+app.use("/api/auth", authRoutes);
 
 app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!' });
