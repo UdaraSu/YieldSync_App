@@ -116,6 +116,21 @@ const AddExpenseScreen = ({ navigation }) => {
     ]);
   };
 
+  const generateReport = () => {
+    const categoryTotals = expenses.reduce((acc, item) => {
+      acc[item.category] = (acc[item.category] || 0) + parseFloat(item.amount);
+      return acc;
+    }, {});
+
+    let reportMessage = "Expense Report:\n\n";
+    Object.keys(categoryTotals).forEach(category => {
+      reportMessage += `${category}: Rs. ${categoryTotals[category].toFixed(2)}\n`;
+    });
+    reportMessage += `\nTotal Expenses: Rs. ${totalExpenses.toFixed(2)}`;
+
+    Alert.alert("Expense Report", reportMessage);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{editingId ? "Edit Expense" : "Add New Expense"}</Text>
@@ -169,9 +184,14 @@ const AddExpenseScreen = ({ navigation }) => {
           </View>
         )}
       />
-
-      {/* Total Expenses Display */}
-      <Text style={styles.totalExpenseText}>Total Expenses: Rs. {totalExpenses.toFixed(2)}</Text>
+      
+      {/* Total Expenses and Report Button */}
+      <View style={styles.expensesRow}>
+        <Text style={styles.totalExpenseText}>Total Expenses: Rs. {totalExpenses.toFixed(2)}</Text>
+        <TouchableOpacity style={styles.reportButton} onPress={generateReport}>
+          <Text style={styles.buttonText}>Generate Report</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -179,13 +199,14 @@ const AddExpenseScreen = ({ navigation }) => {
 const styles = {
   container: { flex: 1, padding: 20, backgroundColor: "#e8f5e9" },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10, textAlign: "center" },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginVertical: 5, borderRadius: 5, backgroundColor: "#fff" },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 7, marginVertical: 5, borderRadius: 5, backgroundColor: "#fff" },
   pickerContainer: {  borderWidth: 1,borderColor: '#ddd',borderRadius: 10,marginBottom: 5,overflow: 'hidden', backgroundColor: '#fff',marginTop:5},
-  picker: { height: 54, width: "100%" },
-  dateButton: { backgroundColor: "#ddd", padding: 12, borderRadius: 5, alignItems: "center", marginVertical: 5 },
-  dateButtonText: { fontSize: 16 },
-  button: { backgroundColor: "#2e7d32", padding: 12, borderRadius: 5, alignItems: "center", marginTop: 10 ,marginBottom:10},
+  picker: { height: 52, width: "100%" ,fontSize: 10},
+  dateButton: { backgroundColor: "#ddd", padding: 8, borderRadius: 5, alignItems: "center", marginVertical: 5 },
+  dateButtonText: { fontSize: 12 },
+  button: { backgroundColor: "#2e7d32", padding: 14, borderRadius: 5, alignItems: "center", marginTop: 10 ,marginBottom:10},
   buttonText: { color: "#fff", fontSize:14, fontWeight: "bold" },
+  reportButton: { backgroundColor: "#2e7d32", padding: 8.5, borderRadius: 20, alignItems: "center", marginBottom: 2 },
   expenseItem: { backgroundColor: "white", padding: 15, borderRadius: 8, marginVertical: 5 },
   expenseText: { fontSize: 16, fontWeight: "bold" },
   expenseCategoryText: { fontSize: 14, color: "#555" },
@@ -193,7 +214,8 @@ const styles = {
   expenseButtons: { flexDirection: "row", marginTop: 10, justifyContent: 'space-between' },
   editButton: { backgroundColor: "#f5ad42", padding: 8, borderRadius: 5, marginRight: 5, color: "#000" },
   deleteButton: { backgroundColor: "#d32f2f", padding: 8, borderRadius: 5 },
-  totalExpenseText: { fontSize: 18, fontWeight: "bold", marginTop: 20, textAlign: "center" }
+  totalExpenseText: { fontSize: 16, fontWeight: "bold", textAlign: "center" },
+  expensesRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }
 };
 
 export default AddExpenseScreen;

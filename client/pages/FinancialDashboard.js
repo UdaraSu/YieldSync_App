@@ -54,7 +54,7 @@ export default function FinancialDashboard({ navigation }) {
 
       <View style={styles.summaryContainer}>
         <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>📊 Monthly Expense Overview</Text>
+          <Text style={styles.chartTitle}>📊 Current Expense Overview</Text>
           <PieChart
             data={data}
             width={350}
