@@ -5,6 +5,7 @@ const cors = require('cors');
 const authRoutes = require("./routes/authRouts");
 const postRoutes = require("./routes/postRoutes"); // Import post routes
 const noticeRoutes = require("./routes/noticeRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 const app = express();
 app.use(express.json());
@@ -24,6 +25,8 @@ console.log("MongoDB URI:", process.env.MONGO_URI); // Debugging
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/notices", noticeRoutes);
+app.use("/api/messages", messageRoutes);
+
 
 
 app.get('/api/test', (req, res) => {

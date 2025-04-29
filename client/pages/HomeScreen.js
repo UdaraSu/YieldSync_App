@@ -30,6 +30,11 @@ const HomeScreen = ({ navigation }) => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
+  const handleImageClick = (id) => {
+    // Navigate to the Details screen, passing the image id
+    navigation.navigate("Details", { imageId: id });
+  };
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f5e9", padding: 20 }}>
